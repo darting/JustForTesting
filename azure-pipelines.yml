@@ -3,12 +3,43 @@
 # Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
 # https://docs.microsoft.com/vsts/pipelines/languages/docker
 
+# pool:
+#   vmImage: 'Ubuntu 16.04'
+
+# variables:
+#   imageName: 'just-for-testing:$(build.buildId)'
+
+# steps:
+# - script: docker build -f Dockerfile -t $(imageName) .
+#   displayName: 'docker build'
+
+
 pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  imageName: 'just-for-testing:$(build.buildId)'
+  buildConfiguration: 'Release'
 
 steps:
-- script: docker build -f Dockerfile -t $(imageName) .
-  displayName: 'docker build'
+- script: dotnet restore
+  displayName: 'dotnet restore'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+- task: PublishBuildArtifacts@1
+  displayName: 'publish artifacts'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'publish template'
+  inputs:
+    pathToPublish: '$(Build.SourcesDirectory)/arm-template'
+    artifactName: 'ArmTemplate'
