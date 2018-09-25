@@ -1,6 +1,6 @@
 - run
 
-docker run -e "ASPNETCORE_ENVIRONMENT=Development" -it --rm -p 8100:80 --name justfortesting justfortesting
+docker run -e "ASPNETCORE_ENVIRONMENT=Development" -t -d -p 8100:80 --name justfortesting justfortesting
 
 - build
 
