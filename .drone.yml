@@ -1,4 +1,5 @@
 pipeline:
   build:
     image: valorzhong/justfortesting:latest
-    commands: dotnet run
+    command: 
+      - docker build -t justfortesting .
